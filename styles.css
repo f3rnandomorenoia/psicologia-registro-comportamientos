@@ -109,6 +109,10 @@ button {
   z-index: 1;
 }
 
+.print-header {
+  display: none;
+}
+
 .eyebrow {
   width: fit-content;
   margin: 0 0 0.75rem;
@@ -616,18 +620,43 @@ textarea:focus {
   background: rgba(244, 63, 94, 0.06);
 }
 
+.entries-table__actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: flex-end;
+}
+
+.entries-table__edit,
 .entries-table__delete {
   border: 0;
   border-radius: 999px;
   padding: 0.42rem 0.62rem;
-  color: #7f1d1d;
-  background: rgba(244, 63, 94, 0.1);
   font-size: 0.76rem;
   font-weight: 900;
 }
 
+.entries-table__edit {
+  color: var(--primary-dark);
+  background: rgba(124, 58, 237, 0.1);
+}
+
+.entries-table__delete {
+  color: #7f1d1d;
+  background: rgba(244, 63, 94, 0.1);
+}
+
+.entries-table__edit:hover {
+  background: rgba(124, 58, 237, 0.18);
+}
+
 .entries-table__delete:hover {
   background: rgba(244, 63, 94, 0.18);
+}
+
+.pdf-export-mode .entries-table__edit,
+.pdf-export-mode .entries-table__delete {
+  display: none;
 }
 
 .list-panel__header {
@@ -782,16 +811,36 @@ textarea:focus {
   font-weight: 800;
 }
 
+.entry-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.entry-card__edit,
 .entry-card__delete {
   justify-self: start;
   border: 0;
   border-radius: 999px;
   padding: 0.55rem 0.75rem;
-  color: #7f1d1d;
-  background: rgba(244, 63, 94, 0.1);
   font-size: 0.85rem;
   font-weight: 900;
   transition: background var(--speed), transform var(--speed);
+}
+
+.entry-card__edit {
+  color: var(--primary-dark);
+  background: rgba(124, 58, 237, 0.1);
+}
+
+.entry-card__delete {
+  color: #7f1d1d;
+  background: rgba(244, 63, 94, 0.1);
+}
+
+.entry-card__edit:hover {
+  background: rgba(124, 58, 237, 0.18);
+  transform: translateY(-1px);
 }
 
 .entry-card__delete:hover {
@@ -873,10 +922,16 @@ dialog::backdrop {
   line-height: 1.45;
 }
 
-.dialog-card--import textarea {
+.dialog-card--import textarea,
+.dialog-card--edit textarea {
   min-height: 12rem;
   font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
   font-size: 0.9rem;
+}
+
+.dialog-card--edit textarea {
+  min-height: 7rem;
+  font-family: inherit;
 }
 
 .toast-region {
@@ -1156,10 +1211,12 @@ dialog::backdrop {
   }
 
   .entry-card__date,
+  .entry-card__edit,
   .entry-card__delete {
     font-size: 0.72rem;
   }
 
+  .entry-card__edit,
   .entry-card__delete {
     padding: 0.42rem 0.58rem;
   }
@@ -1174,6 +1231,151 @@ dialog::backdrop {
 
   .dialog-card__actions .button {
     width: 100%;
+  }
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #111827;
+  }
+
+  body::before,
+  .hero,
+  .stats-grid,
+  .forms-grid,
+  .toolbar,
+  .entry-list,
+  .entry-card,
+  .empty-state,
+  .list-meta,
+  .toast-region,
+  dialog {
+    display: none !important;
+  }
+
+  .app-shell {
+    width: 100%;
+    min-height: auto;
+    padding: 0;
+  }
+
+  .print-header {
+    display: block;
+    margin-block-end: 1rem;
+    break-after: avoid;
+  }
+
+  .print-header .eyebrow {
+    margin-block-end: 0.35rem;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: #4b5563;
+    font-size: 9pt;
+  }
+
+  .print-header h1 {
+    max-width: none;
+    margin: 0 0 0.35rem;
+    color: #111827;
+    font-size: 20pt;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  .print-header p {
+    margin: 0;
+    color: #4b5563;
+    font-size: 10pt;
+  }
+
+  .lists-grid {
+    display: block;
+    margin: 0;
+  }
+
+  .list-panel {
+    display: block;
+    margin-block: 0 1rem;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
+    break-inside: avoid;
+  }
+
+  .list-panel__header {
+    display: block;
+    margin-block: 0 0.35rem;
+    border: 0;
+    padding: 0;
+  }
+
+  .list-panel__header h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 14pt;
+    line-height: 1.2;
+  }
+
+  .entries-table-wrap {
+    display: block !important;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .entries-table {
+    width: 100%;
+    min-width: 0;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+  }
+
+  .entries-table th,
+  .entries-table td {
+    border: 1px solid #d1d5db;
+    padding: 5pt 6pt;
+    vertical-align: top;
+  }
+
+  .entries-table th {
+    position: static;
+    background: #f3f4f6 !important;
+    color: #111827;
+    font-size: 8pt;
+  }
+
+  .entries-table td:first-child {
+    width: 40%;
+  }
+
+  .entries-table td:nth-child(2) {
+    width: 60%;
+  }
+
+  .entries-table th:nth-child(3),
+  .entries-table td:nth-child(3),
+  .entries-table__delete {
+    display: none !important;
+  }
+
+  .entries-table tr {
+    break-inside: avoid;
   }
 }
 

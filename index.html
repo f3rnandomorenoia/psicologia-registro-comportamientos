@@ -50,6 +50,16 @@
         </article>
       </section>
 
+      <section class="print-header" aria-label="Cabecera para PDF">
+        <p class="eyebrow">Psicología · Registro privado</p>
+        <h1>Registro de comportamientos y juicios</h1>
+        <p>
+          Positivos: <strong id="printPositiveCount">0</strong> ·
+          Negativos: <strong id="printNegativeCount">0</strong> ·
+          Total: <strong id="printTotalCount">0</strong>
+        </p>
+      </section>
+
       <section class="forms-grid forms-grid--single" aria-label="Añadir nuevos registros">
         <article class="panel panel--entry" id="entryPanel">
           <div class="panel__header">
@@ -136,6 +146,7 @@
 
       <section class="toolbar toolbar--data" aria-label="Acciones de datos">
         <button class="button button--ghost" id="exportButton" type="button">Exportar JSON</button>
+        <button class="button button--ghost" id="exportPdfButton" type="button">Exportar PDF</button>
         <button class="button button--ghost" id="importButton" type="button">Importar JSON</button>
         <button class="button button--danger" id="clearButton" type="button">Borrar todo</button>
         <p class="toolbar__hint">Exporta una copia de seguridad o importa un JSON anterior cuando lo necesites.</p>
@@ -155,7 +166,10 @@
             <p class="entry-card__judgment"></p>
           </div>
         </div>
-        <button class="entry-card__delete" type="button" aria-label="Eliminar registro">Eliminar</button>
+        <div class="entry-card__actions">
+          <button class="entry-card__edit" type="button" aria-label="Editar registro">Editar</button>
+          <button class="entry-card__delete" type="button" aria-label="Eliminar registro">Eliminar</button>
+        </div>
       </article>
     </template>
 
@@ -180,6 +194,41 @@
         <div class="dialog-card__actions">
           <button class="button button--ghost" value="cancel" type="submit">Cancelar</button>
           <button class="button button--danger" value="confirm" type="submit">Sí, eliminar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="editDialog" aria-labelledby="editTitle" aria-describedby="editDescription">
+      <form method="dialog" class="dialog-card dialog-card--edit">
+        <span class="dialog-card__icon" aria-hidden="true">✏️</span>
+        <h2 id="editTitle">Editar registro</h2>
+        <p id="editDescription">Modifica el tipo, el comportamiento o el juicio asociado.</p>
+
+        <fieldset class="type-picker" aria-label="Tipo de comportamiento editado">
+          <legend>Tipo</legend>
+          <label class="type-option type-option--positive">
+            <input type="radio" name="editType" value="positive" />
+            <span>Positivo</span>
+          </label>
+          <label class="type-option type-option--negative">
+            <input type="radio" name="editType" value="negative" />
+            <span>Negativo</span>
+          </label>
+        </fieldset>
+
+        <label>
+          <span>Comportamiento</span>
+          <textarea id="editBehaviorInput" rows="4" required maxlength="360"></textarea>
+        </label>
+
+        <label>
+          <span>Juicio asociado</span>
+          <textarea id="editJudgmentInput" rows="4" required maxlength="360"></textarea>
+        </label>
+
+        <div class="dialog-card__actions">
+          <button class="button button--ghost" value="cancel" type="submit">Cancelar</button>
+          <button class="button button--primary" value="confirm" type="submit">Guardar cambios</button>
         </div>
       </form>
     </dialog>

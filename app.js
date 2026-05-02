@@ -7,6 +7,7 @@ let state = loadState();
 let showBothSides = false;
 let tableView = false;
 let pendingDelete = null;
+let pendingEdit = null;
 
 const dom = {
   form: document.querySelector('.entry-form'),
@@ -29,9 +30,13 @@ const dom = {
   positiveCount: document.querySelector('#positiveCount'),
   negativeCount: document.querySelector('#negativeCount'),
   totalCount: document.querySelector('#totalCount'),
+  printPositiveCount: document.querySelector('#printPositiveCount'),
+  printNegativeCount: document.querySelector('#printNegativeCount'),
+  printTotalCount: document.querySelector('#printTotalCount'),
   tableViewButton: document.querySelector('#tableViewButton'),
   showBothToggle: document.querySelector('#showBothToggle'),
   exportButton: document.querySelector('#exportButton'),
+  exportPdfButton: document.querySelector('#exportPdfButton'),
   importButton: document.querySelector('#importButton'),
   importDialog: document.querySelector('#importDialog'),
   importJsonInput: document.querySelector('#importJsonInput'),
@@ -39,6 +44,10 @@ const dom = {
   confirmDialog: document.querySelector('#confirmDialog'),
   deleteDialog: document.querySelector('#deleteDialog'),
   deletePreview: document.querySelector('#deletePreview'),
+  editDialog: document.querySelector('#editDialog'),
+  editTypeInputs: document.querySelectorAll('input[name="editType"]'),
+  editBehaviorInput: document.querySelector('#editBehaviorInput'),
+  editJudgmentInput: document.querySelector('#editJudgmentInput'),
   toastRegion: document.querySelector('#toastRegion'),
   template: document.querySelector('#entryTemplate'),
 };
@@ -88,6 +97,32 @@ function deleteEntry(type, id) {
   showToast('Registro eliminado.');
 }
 
+function updateEntry(currentType, id, nextType, behavior, judgment) {
+  if (!['positive', 'negative'].includes(currentType) || !['positive', 'negative'].includes(nextType)) return false;
+
+  const entryIndex = state[currentType].findIndex((entry) => entry.id === id);
+  if (entryIndex === -1) return false;
+
+  const updatedEntry = {
+    ...state[currentType][entryIndex],
+    behavior: behavior.trim(),
+    judgment: judgment.trim(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (currentType === nextType) {
+    state[currentType][entryIndex] = updatedEntry;
+  } else {
+    state[currentType].splice(entryIndex, 1);
+    state[nextType].unshift(updatedEntry);
+  }
+
+  saveState();
+  render();
+  showToast('Registro actualizado.');
+  return true;
+}
+
 function render() {
   renderList('positive', dom.positiveList, dom.positiveTable, dom.positivePanel, dom.positiveMeta);
   renderList('negative', dom.negativeList, dom.negativeTable, dom.negativePanel, dom.negativeMeta);
@@ -107,6 +142,7 @@ function renderList(type, listElement, tableElement, panelElement, metaElement) 
     const node = dom.template.content.firstElementChild.cloneNode(true);
     const date = new Date(entry.createdAt);
     const flipButton = node.querySelector('.entry-card__flip');
+    const editButton = node.querySelector('.entry-card__edit');
     const deleteButton = node.querySelector('.entry-card__delete');
     const timeElement = node.querySelector('.entry-card__date');
 
@@ -124,6 +160,8 @@ function renderList(type, listElement, tableElement, panelElement, metaElement) 
       event.preventDefault();
       toggleCardFlip(node, flipButton);
     });
+    editButton.setAttribute('aria-label', `Editar registro: ${entry.behavior.slice(0, 60)}`);
+    editButton.addEventListener('click', () => openEditDialog(type, entry));
     deleteButton.setAttribute('aria-label', `Eliminar registro: ${entry.behavior.slice(0, 60)}`);
     deleteButton.addEventListener('click', () => openDeleteConfirm(type, entry));
 
@@ -156,17 +194,26 @@ function renderTable(type, entries, tableElement) {
     const behaviorCell = document.createElement('td');
     const judgmentCell = document.createElement('td');
     const actionCell = document.createElement('td');
+    const actionGroup = document.createElement('div');
+    const editButton = document.createElement('button');
     const deleteButton = document.createElement('button');
 
     behaviorCell.textContent = entry.behavior;
     judgmentCell.textContent = entry.judgment;
+    actionGroup.className = 'entries-table__actions';
+    editButton.className = 'entries-table__edit';
+    editButton.type = 'button';
+    editButton.textContent = 'Editar';
+    editButton.setAttribute('aria-label', `Editar registro: ${entry.behavior.slice(0, 60)}`);
+    editButton.addEventListener('click', () => openEditDialog(type, entry));
     deleteButton.className = 'entries-table__delete';
     deleteButton.type = 'button';
     deleteButton.textContent = 'Eliminar';
     deleteButton.setAttribute('aria-label', `Eliminar registro: ${entry.behavior.slice(0, 60)}`);
     deleteButton.addEventListener('click', () => openDeleteConfirm(type, entry));
 
-    actionCell.append(deleteButton);
+    actionGroup.append(editButton, deleteButton);
+    actionCell.append(actionGroup);
     row.append(behaviorCell, judgmentCell, actionCell);
     tbody.append(row);
   });
@@ -204,6 +251,17 @@ function openDeleteConfirm(type, entry) {
   dom.deleteDialog.showModal();
 }
 
+function openEditDialog(type, entry) {
+  pendingEdit = { type, id: entry.id };
+  dom.editTypeInputs.forEach((input) => {
+    input.checked = input.value === type;
+  });
+  dom.editBehaviorInput.value = entry.behavior;
+  dom.editJudgmentInput.value = entry.judgment;
+  dom.editDialog.showModal();
+  dom.editBehaviorInput.focus();
+}
+
 function renderStats() {
   const positiveCount = state.positive.length;
   const negativeCount = state.negative.length;
@@ -211,6 +269,9 @@ function renderStats() {
   dom.positiveCount.textContent = positiveCount;
   dom.negativeCount.textContent = negativeCount;
   dom.totalCount.textContent = positiveCount + negativeCount;
+  dom.printPositiveCount.textContent = positiveCount;
+  dom.printNegativeCount.textContent = negativeCount;
+  dom.printTotalCount.textContent = positiveCount + negativeCount;
 }
 
 function formatCount(count) {
@@ -248,6 +309,17 @@ function exportJson() {
   link.remove();
   URL.revokeObjectURL(url);
   showToast('JSON exportado.');
+}
+
+function exportPdf() {
+  if (state.positive.length + state.negative.length === 0) {
+    showToast('No hay registros para exportar en PDF.');
+    return;
+  }
+
+  setTableView(true);
+  document.body.classList.add('pdf-export-mode');
+  window.print();
 }
 
 function normalizeImportedEntries(entries) {
@@ -355,6 +427,8 @@ function bindEvents() {
   dom.tableViewButton.addEventListener('click', () => setTableView(!tableView));
   dom.showBothToggle.addEventListener('change', () => setShowBothSides(dom.showBothToggle.checked));
   dom.exportButton.addEventListener('click', exportJson);
+  dom.exportPdfButton.addEventListener('click', exportPdf);
+  window.addEventListener('afterprint', () => document.body.classList.remove('pdf-export-mode'));
   dom.importButton.addEventListener('click', () => {
     dom.importJsonInput.value = '';
     dom.importDialog.showModal();
@@ -375,6 +449,25 @@ function bindEvents() {
     }
     pendingDelete = null;
     dom.deletePreview.textContent = '';
+  });
+  dom.editDialog.addEventListener('close', () => {
+    if (dom.editDialog.returnValue !== 'confirm') {
+      pendingEdit = null;
+      return;
+    }
+
+    const behavior = dom.editBehaviorInput.value.trim();
+    const judgment = dom.editJudgmentInput.value.trim();
+    const nextType = [...dom.editTypeInputs].find((input) => input.checked)?.value || pendingEdit?.type || 'positive';
+
+    if (!behavior || !judgment) {
+      showToast('Completa el comportamiento y el juicio asociado.');
+      dom.editDialog.showModal();
+      return;
+    }
+
+    if (pendingEdit) updateEntry(pendingEdit.type, pendingEdit.id, nextType, behavior, judgment);
+    pendingEdit = null;
   });
 }
 
