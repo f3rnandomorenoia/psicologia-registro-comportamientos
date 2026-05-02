@@ -758,8 +758,134 @@ dialog::backdrop {
 }
 
 @media (max-width: 540px) {
+  .app-shell {
+    width: min(100% - 0.8rem, 1160px);
+    padding-block-start: 0.4rem;
+  }
+
+  .hero {
+    min-height: auto;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 1.25rem;
+  }
+
+  .eyebrow {
+    margin-block-end: 0.45rem;
+    padding: 0.32rem 0.55rem;
+    font-size: 0.68rem;
+  }
+
+  h1 {
+    max-width: 15ch;
+    margin-block-end: 0.55rem;
+    font-size: clamp(1.9rem, 12vw, 3rem);
+    line-height: 0.95;
+  }
+
+  h2 {
+    font-size: 1.08rem;
+  }
+
+  .hero__text {
+    font-size: 0.92rem;
+    line-height: 1.42;
+  }
+
+  .hero-card {
+    grid-template-columns: auto 1fr;
+    gap: 0.15rem 0.65rem;
+    padding: 0.75rem;
+    border-radius: 1rem;
+  }
+
+  .hero-card__icon {
+    grid-row: span 2;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.75rem;
+    font-size: 1.1rem;
+  }
+
+  .hero-card span:last-child {
+    font-size: 0.86rem;
+  }
+
   .stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+    margin-block-start: 0.55rem;
+  }
+
+  .stat-card {
+    min-height: auto;
+    gap: 0.15rem;
+    padding: 0.65rem;
+    border-radius: 1rem;
+  }
+
+  .stat-card__label {
+    font-size: 0.62rem;
+    letter-spacing: 0.05em;
+  }
+
+  .stat-card strong {
+    font-size: 1.75rem;
+  }
+
+  .forms-grid,
+  .lists-grid {
+    gap: 0.6rem;
+    margin-block-start: 0.6rem;
+  }
+
+  .panel,
+  .list-panel,
+  .toolbar {
+    border-radius: 1.05rem;
+    padding: 0.75rem;
+  }
+
+  .panel__header {
+    gap: 0.55rem;
+    margin-block-end: 0.7rem;
+  }
+
+  .panel__header p {
+    display: none;
+  }
+
+  .badge {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.7rem;
+    font-size: 1.1rem;
+  }
+
+  .entry-form {
+    gap: 0.58rem;
+  }
+
+  label {
+    gap: 0.3rem;
+    font-size: 0.9rem;
+  }
+
+  textarea {
+    min-height: 4.35rem;
+    border-radius: 0.85rem;
+    padding: 0.7rem 0.78rem;
+    font-size: 0.92rem;
+  }
+
+  .field-help {
+    display: none;
+  }
+
+  .button,
+  .view-toggle {
+    min-height: 2.55rem;
+    font-size: 0.88rem;
   }
 
   .toolbar .button,
@@ -770,6 +896,74 @@ dialog::backdrop {
 
   .view-toggle {
     justify-content: center;
+    padding-block: 0.35rem;
+  }
+
+  .toolbar {
+    gap: 0.5rem;
+  }
+
+  .toolbar__hint {
+    font-size: 0.78rem;
+  }
+
+  .list-panel__header {
+    padding-block-end: 0.65rem;
+  }
+
+  .list-meta {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .entry-list {
+    grid-auto-columns: minmax(13.25rem, 15.5rem);
+    gap: 0.55rem;
+    margin-block-start: 0.65rem;
+    padding-block-end: 0.55rem;
+  }
+
+  .entry-card {
+    gap: 0.45rem;
+  }
+
+  .entry-card__side {
+    min-height: 11.75rem;
+    gap: 0.55rem;
+    padding: 0.75rem;
+    border-radius: 0.9rem;
+  }
+
+  .entry-card__label {
+    padding: 0.25rem 0.45rem;
+    font-size: 0.64rem;
+  }
+
+  .entry-card__behavior {
+    font-size: 0.98rem;
+    line-height: 1.36;
+  }
+
+  .entry-card__judgment {
+    font-size: 0.92rem;
+    line-height: 1.38;
+  }
+
+  .entry-card__date,
+  .entry-card__delete {
+    font-size: 0.72rem;
+  }
+
+  .entry-card__delete {
+    padding: 0.42rem 0.58rem;
+  }
+
+  .show-both-sides .entry-card__side {
+    min-height: 6.2rem;
+  }
+
+  .show-both-sides .entry-card__side--back {
+    min-height: 5.4rem;
   }
 
   .dialog-card__actions .button {
