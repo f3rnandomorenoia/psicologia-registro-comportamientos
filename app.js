@@ -7,7 +7,15 @@ let state = loadState();
 let showBothSides = false;
 
 const dom = {
-  forms: document.querySelectorAll('.entry-form'),
+  form: document.querySelector('.entry-form'),
+  typeInputs: document.querySelectorAll('input[name="type"]'),
+  entryPanel: document.querySelector('#entryPanel'),
+  entryTypeBadge: document.querySelector('#entryTypeBadge'),
+  behaviorLabel: document.querySelector('#behaviorLabel'),
+  behaviorInput: document.querySelector('textarea[name="behavior"]'),
+  judgmentInput: document.querySelector('textarea[name="judgment"]'),
+  behaviorHelp: document.querySelector('#behaviorHelp'),
+  entrySubmitButton: document.querySelector('#entrySubmitButton'),
   positiveList: document.querySelector('#positiveList'),
   negativeList: document.querySelector('#negativeList'),
   positivePanel: document.querySelector('.list-panel--positive'),
@@ -243,7 +251,7 @@ function handleSubmit(event) {
 
   const form = event.currentTarget;
   const formData = new FormData(form);
-  const type = form.dataset.type;
+  const type = String(formData.get('type') || 'positive');
   const behavior = String(formData.get('behavior') || '');
   const judgment = String(formData.get('judgment') || '');
 
@@ -254,11 +262,33 @@ function handleSubmit(event) {
 
   addEntry(type, behavior, judgment);
   form.reset();
+  updateEntryFormType('positive');
   form.querySelector('textarea')?.focus();
 }
 
+function updateEntryFormType(type) {
+  const isPositive = type === 'positive';
+  dom.entryPanel.classList.toggle('panel--positive-selected', isPositive);
+  dom.entryPanel.classList.toggle('panel--negative-selected', !isPositive);
+  dom.entryTypeBadge.className = `badge ${isPositive ? 'badge--positive' : 'badge--negative'}`;
+  dom.entryTypeBadge.textContent = isPositive ? '+' : '−';
+  dom.behaviorLabel.textContent = isPositive ? 'Comportamiento positivo' : 'Comportamiento negativo';
+  dom.behaviorInput.placeholder = isPositive
+    ? 'Ej. He respirado antes de contestar...'
+    : 'Ej. He interrumpido antes de escuchar...';
+  dom.judgmentInput.placeholder = isPositive
+    ? 'Ej. Puedo regularme incluso cuando estoy tenso...'
+    : 'Ej. Cuando me siento atacado, reacciono demasiado rápido...';
+  dom.behaviorHelp.textContent = isPositive
+    ? 'Describe una conducta concreta y observable.'
+    : 'Registra el hecho sin convertirlo en una etiqueta personal.';
+  dom.entrySubmitButton.className = `button ${isPositive ? 'button--positive' : 'button--negative'}`;
+  dom.entrySubmitButton.textContent = isPositive ? 'Añadir positivo' : 'Añadir negativo';
+}
+
 function bindEvents() {
-  dom.forms.forEach((form) => form.addEventListener('submit', handleSubmit));
+  dom.form.addEventListener('submit', handleSubmit);
+  dom.typeInputs.forEach((input) => input.addEventListener('change', () => updateEntryFormType(input.value)));
   dom.showBothToggle.addEventListener('change', () => setShowBothSides(dom.showBothToggle.checked));
   dom.exportButton.addEventListener('click', exportJson);
   dom.importButton.addEventListener('click', () => {
@@ -278,4 +308,5 @@ function bindEvents() {
 }
 
 bindEvents();
+updateEntryFormType('positive');
 render();

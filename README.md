@@ -4,7 +4,7 @@ Web estática moderna para registrar comportamientos positivos y negativos con s
 
 ## Funcionalidades
 
-- Registro de comportamientos positivos y negativos.
+- Registro de comportamientos positivos y negativos desde un único formulario con selector de tipo.
 - Juicio asociado a cada comportamiento.
 - Persistencia local en `localStorage` con estructura `{ positive: [], negative: [] }`.
 - Listas dinámicas con fecha de creación y eliminación individual.

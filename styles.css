@@ -275,6 +275,83 @@ h2 {
   gap: 0.9rem;
 }
 
+.forms-grid--single {
+  max-width: 48rem;
+  margin-inline: auto;
+}
+
+.panel--entry {
+  transition: border-color var(--speed), box-shadow var(--speed), background var(--speed);
+}
+
+.panel--positive-selected {
+  border-color: rgba(16, 185, 129, 0.22);
+}
+
+.panel--negative-selected {
+  border-color: rgba(244, 63, 94, 0.24);
+}
+
+.type-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.35rem;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.type-picker legend {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.type-option {
+  display: block;
+  cursor: pointer;
+}
+
+.type-option input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+}
+
+.type-option span {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--muted);
+  font-weight: 950;
+  transition: color var(--speed), background var(--speed), box-shadow var(--speed), transform var(--speed);
+}
+
+.type-option input:checked + span {
+  color: #fff;
+  box-shadow: 0 12px 22px rgba(43, 32, 83, 0.16);
+}
+
+.type-option--positive input:checked + span {
+  background: linear-gradient(135deg, var(--positive-dark), var(--positive));
+}
+
+.type-option--negative input:checked + span {
+  background: linear-gradient(135deg, var(--negative-dark), var(--negative));
+}
+
+.type-option:has(input:focus-visible) span {
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+}
+
 label {
   display: grid;
   gap: 0.45rem;
@@ -766,9 +843,13 @@ dialog::backdrop {
     grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  .forms-grid,
-  .lists-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+.forms-grid,
+.lists-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+  .forms-grid--single {
+    grid-template-columns: minmax(0, 1fr);
   }
 
 }

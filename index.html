@@ -50,29 +50,41 @@
         </article>
       </section>
 
-      <section class="forms-grid" aria-label="Añadir nuevos registros">
-        <article class="panel panel--positive">
+      <section class="forms-grid forms-grid--single" aria-label="Añadir nuevos registros">
+        <article class="panel panel--entry" id="entryPanel">
           <div class="panel__header">
-            <span class="badge badge--positive">+</span>
+            <span class="badge badge--positive" id="entryTypeBadge">+</span>
             <div>
-              <h2>Añadir comportamiento positivo</h2>
-              <p>Refuerza lo que quieres repetir.</p>
+              <h2>Añadir comportamiento</h2>
+              <p>Elige si es positivo o negativo antes de guardarlo.</p>
             </div>
           </div>
 
-          <form class="entry-form" data-type="positive" aria-label="Formulario para comportamiento positivo">
+          <form class="entry-form" aria-label="Formulario para comportamiento">
+            <fieldset class="type-picker" aria-label="Tipo de comportamiento">
+              <legend>Tipo</legend>
+              <label class="type-option type-option--positive">
+                <input type="radio" name="type" value="positive" checked />
+                <span>Positivo</span>
+              </label>
+              <label class="type-option type-option--negative">
+                <input type="radio" name="type" value="negative" />
+                <span>Negativo</span>
+              </label>
+            </fieldset>
+
             <label>
-              <span>Comportamiento positivo</span>
+              <span id="behaviorLabel">Comportamiento positivo</span>
               <textarea
                 name="behavior"
                 rows="3"
                 required
                 maxlength="360"
                 placeholder="Ej. He respirado antes de contestar..."
-                aria-describedby="positiveBehaviorHelp"
+                aria-describedby="behaviorHelp"
               ></textarea>
             </label>
-            <p class="field-help" id="positiveBehaviorHelp">Describe una conducta concreta y observable.</p>
+            <p class="field-help" id="behaviorHelp">Describe una conducta concreta y observable.</p>
 
             <label>
               <span>Juicio asociado</span>
@@ -85,45 +97,7 @@
               ></textarea>
             </label>
 
-            <button class="button button--positive" type="submit">Añadir positivo</button>
-          </form>
-        </article>
-
-        <article class="panel panel--negative">
-          <div class="panel__header">
-            <span class="badge badge--negative">−</span>
-            <div>
-              <h2>Añadir comportamiento negativo</h2>
-              <p>Observa patrones sin castigarte.</p>
-            </div>
-          </div>
-
-          <form class="entry-form" data-type="negative" aria-label="Formulario para comportamiento negativo">
-            <label>
-              <span>Comportamiento negativo</span>
-              <textarea
-                name="behavior"
-                rows="3"
-                required
-                maxlength="360"
-                placeholder="Ej. He interrumpido antes de escuchar..."
-                aria-describedby="negativeBehaviorHelp"
-              ></textarea>
-            </label>
-            <p class="field-help" id="negativeBehaviorHelp">Registra el hecho sin convertirlo en una etiqueta personal.</p>
-
-            <label>
-              <span>Juicio asociado</span>
-              <textarea
-                name="judgment"
-                rows="3"
-                required
-                maxlength="360"
-                placeholder="Ej. Cuando me siento atacado, reacciono demasiado rápido..."
-              ></textarea>
-            </label>
-
-            <button class="button button--negative" type="submit">Añadir negativo</button>
+            <button class="button button--positive" id="entrySubmitButton" type="submit">Añadir positivo</button>
           </form>
         </article>
       </section>
