@@ -144,7 +144,6 @@ function renderTable(type, entries, tableElement) {
       <tr>
         <th scope="col">Comportamiento</th>
         <th scope="col">Juicio</th>
-        <th scope="col">Fecha</th>
         <th scope="col">Acción</th>
       </tr>
     </thead>
@@ -156,13 +155,11 @@ function renderTable(type, entries, tableElement) {
     const row = document.createElement('tr');
     const behaviorCell = document.createElement('td');
     const judgmentCell = document.createElement('td');
-    const dateCell = document.createElement('td');
     const actionCell = document.createElement('td');
     const deleteButton = document.createElement('button');
 
     behaviorCell.textContent = entry.behavior;
     judgmentCell.textContent = entry.judgment;
-    dateCell.textContent = formatDate(new Date(entry.createdAt));
     deleteButton.className = 'entries-table__delete';
     deleteButton.type = 'button';
     deleteButton.textContent = 'Eliminar';
@@ -170,7 +167,7 @@ function renderTable(type, entries, tableElement) {
     deleteButton.addEventListener('click', () => openDeleteConfirm(type, entry));
 
     actionCell.append(deleteButton);
-    row.append(behaviorCell, judgmentCell, dateCell, actionCell);
+    row.append(behaviorCell, judgmentCell, actionCell);
     tbody.append(row);
   });
 

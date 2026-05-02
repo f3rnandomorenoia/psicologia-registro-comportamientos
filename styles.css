@@ -588,22 +588,20 @@ textarea:focus {
 }
 
 .entries-table td:first-child {
-  width: 32%;
+  width: 38%;
   color: var(--text);
   font-weight: 850;
 }
 
 .entries-table td:nth-child(2) {
-  width: 42%;
+  width: 52%;
   color: #332a46;
   line-height: 1.45;
 }
 
 .entries-table td:nth-child(3) {
-  width: 15%;
-  color: var(--muted);
-  font-size: 0.82rem;
-  font-weight: 750;
+  width: 10%;
+  text-align: right;
 }
 
 .entries-table tr:last-child td {
