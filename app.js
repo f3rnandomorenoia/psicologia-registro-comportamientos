@@ -17,6 +17,9 @@ const dom = {
   negativeCount: document.querySelector('#negativeCount'),
   totalCount: document.querySelector('#totalCount'),
   exportButton: document.querySelector('#exportButton'),
+  importButton: document.querySelector('#importButton'),
+  importDialog: document.querySelector('#importDialog'),
+  importJsonInput: document.querySelector('#importJsonInput'),
   clearButton: document.querySelector('#clearButton'),
   confirmDialog: document.querySelector('#confirmDialog'),
   toastRegion: document.querySelector('#toastRegion'),
@@ -150,6 +153,58 @@ function exportJson() {
   showToast('JSON exportado.');
 }
 
+function normalizeImportedEntries(entries) {
+  if (!Array.isArray(entries)) return [];
+
+  return entries
+    .map((entry) => ({
+      id: typeof entry?.id === 'string' && entry.id.trim() ? entry.id : crypto.randomUUID(),
+      behavior: typeof entry?.behavior === 'string' ? entry.behavior.trim() : '',
+      judgment: typeof entry?.judgment === 'string' ? entry.judgment.trim() : '',
+      createdAt: Number.isNaN(Date.parse(entry?.createdAt)) ? new Date().toISOString() : entry.createdAt,
+    }))
+    .filter((entry) => entry.behavior && entry.judgment);
+}
+
+function importJson(rawJson) {
+  let parsedState;
+
+  try {
+    parsedState = JSON.parse(rawJson);
+  } catch (error) {
+    showToast('El JSON pegado no es válido.');
+    return false;
+  }
+
+  const importedState = {
+    positive: normalizeImportedEntries(parsedState.positive),
+    negative: normalizeImportedEntries(parsedState.negative),
+  };
+  const importedTotal = importedState.positive.length + importedState.negative.length;
+
+  if (importedTotal === 0) {
+    showToast('No se han encontrado registros válidos en ese JSON.');
+    return false;
+  }
+
+  const existingIds = new Set([...state.positive, ...state.negative].map((entry) => entry.id));
+  let addedCount = 0;
+
+  ['positive', 'negative'].forEach((type) => {
+    importedState[type].forEach((entry) => {
+      if (existingIds.has(entry.id)) return;
+      existingIds.add(entry.id);
+      state[type].unshift(entry);
+      addedCount += 1;
+    });
+  });
+
+  saveState();
+  render();
+  showToast(addedCount === 1 ? '1 registro importado.' : `${addedCount} registros importados.`);
+  return true;
+}
+
 function clearAllEntries() {
   state = structuredClone(EMPTY_STATE);
   saveState();
@@ -179,6 +234,16 @@ function handleSubmit(event) {
 function bindEvents() {
   dom.forms.forEach((form) => form.addEventListener('submit', handleSubmit));
   dom.exportButton.addEventListener('click', exportJson);
+  dom.importButton.addEventListener('click', () => {
+    dom.importJsonInput.value = '';
+    dom.importDialog.showModal();
+    dom.importJsonInput.focus();
+  });
+  dom.importDialog.addEventListener('close', () => {
+    if (dom.importDialog.returnValue !== 'confirm') return;
+    const imported = importJson(dom.importJsonInput.value.trim());
+    if (!imported) dom.importDialog.showModal();
+  });
   dom.clearButton.addEventListener('click', () => dom.confirmDialog.showModal());
   dom.confirmDialog.addEventListener('close', () => {
     if (dom.confirmDialog.returnValue === 'confirm') clearAllEntries();

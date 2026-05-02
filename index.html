@@ -130,7 +130,9 @@
 
       <section class="toolbar" aria-label="Acciones de datos">
         <button class="button button--ghost" id="exportButton" type="button">Exportar JSON</button>
+        <button class="button button--ghost" id="importButton" type="button">Importar JSON</button>
         <button class="button button--danger" id="clearButton" type="button">Borrar todo</button>
+        <p class="toolbar__hint">Puedes pegar aquí el JSON exportado para recuperarlo en este navegador.</p>
       </section>
 
       <section class="lists-grid" aria-label="Listas dinámicas de comportamientos">
@@ -173,6 +175,22 @@
         <div class="dialog-card__actions">
           <button class="button button--ghost" value="cancel" type="submit">Cancelar</button>
           <button class="button button--danger" value="confirm" type="submit">Sí, borrar todo</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="importDialog" aria-labelledby="importTitle" aria-describedby="importDescription">
+      <form method="dialog" class="dialog-card dialog-card--import">
+        <span class="dialog-card__icon" aria-hidden="true">📥</span>
+        <h2 id="importTitle">Importar JSON exportado</h2>
+        <p id="importDescription">Pega el contenido del archivo JSON exportado. Los registros válidos se añadirán al registro actual sin duplicar los que tengan el mismo identificador.</p>
+        <label>
+          <span>JSON exportado</span>
+          <textarea id="importJsonInput" rows="8" spellcheck="false" placeholder='{\n  "positive": [],\n  "negative": []\n}'></textarea>
+        </label>
+        <div class="dialog-card__actions">
+          <button class="button button--ghost" value="cancel" type="submit">Cancelar</button>
+          <button class="button button--primary" id="importConfirmButton" value="confirm" type="submit">Importar</button>
         </div>
       </form>
     </dialog>
