@@ -772,6 +772,17 @@ dialog::backdrop {
   justify-content: flex-end;
 }
 
+.dialog-card__preview {
+  margin: 0;
+  border-left: 4px solid rgba(124, 58, 237, 0.38);
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  background: rgba(124, 58, 237, 0.08);
+  color: var(--text);
+  font-weight: 800;
+  line-height: 1.45;
+}
+
 .dialog-card--import textarea {
   min-height: 12rem;
   font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;

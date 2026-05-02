@@ -7,7 +7,7 @@ Web estática moderna para registrar comportamientos positivos y negativos con s
 - Registro de comportamientos positivos y negativos desde un único formulario con selector de tipo.
 - Juicio asociado a cada comportamiento.
 - Persistencia local en `localStorage` con estructura `{ positive: [], negative: [] }`.
-- Listas dinámicas con fecha de creación y eliminación individual.
+- Listas dinámicas con fecha de creación y eliminación individual con confirmación antes de borrar cada tarjeta.
 - Tarjetas diferenciadas por color para positivos y negativos, con giro al hacer clic para ver el juicio asociado.
 - Toggle para alternar entre modo tarjeta reversible y vista completa con comportamiento y juicio juntos.
 - Estadísticas rápidas.

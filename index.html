@@ -168,6 +168,19 @@
       </form>
     </dialog>
 
+    <dialog id="deleteDialog" aria-labelledby="deleteTitle" aria-describedby="deleteDescription">
+      <form method="dialog" class="dialog-card">
+        <span class="dialog-card__icon" aria-hidden="true">🗑️</span>
+        <h2 id="deleteTitle">¿Eliminar este registro?</h2>
+        <p id="deleteDescription">Esta acción borrará solo esta tarjeta del registro guardado en este navegador.</p>
+        <blockquote class="dialog-card__preview" id="deletePreview"></blockquote>
+        <div class="dialog-card__actions">
+          <button class="button button--ghost" value="cancel" type="submit">Cancelar</button>
+          <button class="button button--danger" value="confirm" type="submit">Sí, eliminar</button>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="importDialog" aria-labelledby="importTitle" aria-describedby="importDescription">
       <form method="dialog" class="dialog-card dialog-card--import">
         <span class="dialog-card__icon" aria-hidden="true">📥</span>

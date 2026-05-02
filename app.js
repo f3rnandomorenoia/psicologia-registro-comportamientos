@@ -5,6 +5,7 @@ const EMPTY_STATE = { positive: [], negative: [] };
 
 let state = loadState();
 let showBothSides = false;
+let pendingDelete = null;
 
 const dom = {
   form: document.querySelector('.entry-form'),
@@ -32,6 +33,8 @@ const dom = {
   importJsonInput: document.querySelector('#importJsonInput'),
   clearButton: document.querySelector('#clearButton'),
   confirmDialog: document.querySelector('#confirmDialog'),
+  deleteDialog: document.querySelector('#deleteDialog'),
+  deletePreview: document.querySelector('#deletePreview'),
   toastRegion: document.querySelector('#toastRegion'),
   template: document.querySelector('#entryTemplate'),
 };
@@ -117,7 +120,7 @@ function renderList(type, listElement, panelElement, metaElement) {
       toggleCardFlip(node, flipButton);
     });
     deleteButton.setAttribute('aria-label', `Eliminar registro: ${entry.behavior.slice(0, 60)}`);
-    deleteButton.addEventListener('click', () => deleteEntry(type, entry.id));
+    deleteButton.addEventListener('click', () => openDeleteConfirm(type, entry));
 
     fragment.append(node);
   });
@@ -139,6 +142,12 @@ function setShowBothSides(enabled) {
     card.classList.remove('is-flipped');
     card.querySelector('.entry-card__flip')?.setAttribute('aria-pressed', 'false');
   });
+}
+
+function openDeleteConfirm(type, entry) {
+  pendingDelete = { type, id: entry.id };
+  dom.deletePreview.textContent = entry.behavior;
+  dom.deleteDialog.showModal();
 }
 
 function renderStats() {
@@ -304,6 +313,13 @@ function bindEvents() {
   dom.clearButton.addEventListener('click', () => dom.confirmDialog.showModal());
   dom.confirmDialog.addEventListener('close', () => {
     if (dom.confirmDialog.returnValue === 'confirm') clearAllEntries();
+  });
+  dom.deleteDialog.addEventListener('close', () => {
+    if (dom.deleteDialog.returnValue === 'confirm' && pendingDelete) {
+      deleteEntry(pendingDelete.type, pendingDelete.id);
+    }
+    pendingDelete = null;
+    dom.deletePreview.textContent = '';
   });
 }
 
