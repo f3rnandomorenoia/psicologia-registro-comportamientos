@@ -102,15 +102,12 @@
         </article>
       </section>
 
-      <section class="toolbar" aria-label="Acciones de datos">
+      <section class="toolbar toolbar--view" aria-label="Opciones de visualización">
         <label class="view-toggle">
           <input id="showBothToggle" type="checkbox" />
           <span class="view-toggle__control" aria-hidden="true"></span>
           <span>Ver comportamiento y juicio juntos</span>
         </label>
-        <button class="button button--ghost" id="exportButton" type="button">Exportar JSON</button>
-        <button class="button button--ghost" id="importButton" type="button">Importar JSON</button>
-        <button class="button button--danger" id="clearButton" type="button">Borrar todo</button>
         <p class="toolbar__hint">Con el toggle apagado, pulsa una tarjeta para ver el juicio por detrás. Con el toggle encendido, se ve todo junto.</p>
       </section>
 
@@ -132,6 +129,13 @@
           <div id="negativeList" class="entry-list" role="list" aria-live="polite"></div>
           <p id="negativeEmpty" class="empty-state">Todavía no hay comportamientos negativos. Puedes registrar uno cuando lo necesites.</p>
         </article>
+      </section>
+
+      <section class="toolbar toolbar--data" aria-label="Acciones de datos">
+        <button class="button button--ghost" id="exportButton" type="button">Exportar JSON</button>
+        <button class="button button--ghost" id="importButton" type="button">Importar JSON</button>
+        <button class="button button--danger" id="clearButton" type="button">Borrar todo</button>
+        <p class="toolbar__hint">Exporta una copia de seguridad o importa un JSON anterior cuando lo necesites.</p>
       </section>
     </main>
 

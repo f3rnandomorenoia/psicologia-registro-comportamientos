@@ -444,6 +444,14 @@ textarea:focus {
   padding: 1rem;
 }
 
+.toolbar--view {
+  margin-block-start: 0.75rem;
+}
+
+.toolbar--data {
+  margin-block-start: 1rem;
+}
+
 .view-toggle {
   display: inline-flex;
   align-items: center;
