@@ -5,6 +5,7 @@ const EMPTY_STATE = { positive: [], negative: [] };
 
 let state = loadState();
 let showBothSides = false;
+let tableView = false;
 let pendingDelete = null;
 
 const dom = {
@@ -19,6 +20,8 @@ const dom = {
   entrySubmitButton: document.querySelector('#entrySubmitButton'),
   positiveList: document.querySelector('#positiveList'),
   negativeList: document.querySelector('#negativeList'),
+  positiveTable: document.querySelector('#positiveTable'),
+  negativeTable: document.querySelector('#negativeTable'),
   positivePanel: document.querySelector('.list-panel--positive'),
   negativePanel: document.querySelector('.list-panel--negative'),
   positiveMeta: document.querySelector('#positiveMeta'),
@@ -26,6 +29,7 @@ const dom = {
   positiveCount: document.querySelector('#positiveCount'),
   negativeCount: document.querySelector('#negativeCount'),
   totalCount: document.querySelector('#totalCount'),
+  tableViewButton: document.querySelector('#tableViewButton'),
   showBothToggle: document.querySelector('#showBothToggle'),
   exportButton: document.querySelector('#exportButton'),
   importButton: document.querySelector('#importButton'),
@@ -85,14 +89,15 @@ function deleteEntry(type, id) {
 }
 
 function render() {
-  renderList('positive', dom.positiveList, dom.positivePanel, dom.positiveMeta);
-  renderList('negative', dom.negativeList, dom.negativePanel, dom.negativeMeta);
+  renderList('positive', dom.positiveList, dom.positiveTable, dom.positivePanel, dom.positiveMeta);
+  renderList('negative', dom.negativeList, dom.negativeTable, dom.negativePanel, dom.negativeMeta);
   renderStats();
 }
 
-function renderList(type, listElement, panelElement, metaElement) {
+function renderList(type, listElement, tableElement, panelElement, metaElement) {
   const entries = state[type];
   listElement.replaceChildren();
+  tableElement.replaceChildren();
   panelElement.classList.toggle('is-empty', entries.length === 0);
   metaElement.textContent = formatCount(entries.length);
 
@@ -126,6 +131,51 @@ function renderList(type, listElement, panelElement, metaElement) {
   });
 
   listElement.append(fragment);
+  renderTable(type, entries, tableElement);
+}
+
+function renderTable(type, entries, tableElement) {
+  if (entries.length === 0) return;
+
+  const table = document.createElement('table');
+  table.className = `entries-table entries-table--${type}`;
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th scope="col">Comportamiento</th>
+        <th scope="col">Juicio</th>
+        <th scope="col">Fecha</th>
+        <th scope="col">Acción</th>
+      </tr>
+    </thead>
+  `;
+
+  const tbody = document.createElement('tbody');
+
+  entries.forEach((entry) => {
+    const row = document.createElement('tr');
+    const behaviorCell = document.createElement('td');
+    const judgmentCell = document.createElement('td');
+    const dateCell = document.createElement('td');
+    const actionCell = document.createElement('td');
+    const deleteButton = document.createElement('button');
+
+    behaviorCell.textContent = entry.behavior;
+    judgmentCell.textContent = entry.judgment;
+    dateCell.textContent = formatDate(new Date(entry.createdAt));
+    deleteButton.className = 'entries-table__delete';
+    deleteButton.type = 'button';
+    deleteButton.textContent = 'Eliminar';
+    deleteButton.setAttribute('aria-label', `Eliminar registro: ${entry.behavior.slice(0, 60)}`);
+    deleteButton.addEventListener('click', () => openDeleteConfirm(type, entry));
+
+    actionCell.append(deleteButton);
+    row.append(behaviorCell, judgmentCell, dateCell, actionCell);
+    tbody.append(row);
+  });
+
+  table.append(tbody);
+  tableElement.append(table);
 }
 
 function toggleCardFlip(card, flipButton) {
@@ -142,6 +192,13 @@ function setShowBothSides(enabled) {
     card.classList.remove('is-flipped');
     card.querySelector('.entry-card__flip')?.setAttribute('aria-pressed', 'false');
   });
+}
+
+function setTableView(enabled) {
+  tableView = enabled;
+  document.body.classList.toggle('table-view', tableView);
+  dom.tableViewButton.textContent = tableView ? 'Ver tarjetas' : 'Ver tabla';
+  dom.tableViewButton.setAttribute('aria-pressed', String(tableView));
 }
 
 function openDeleteConfirm(type, entry) {
@@ -298,6 +355,7 @@ function updateEntryFormType(type) {
 function bindEvents() {
   dom.form.addEventListener('submit', handleSubmit);
   dom.typeInputs.forEach((input) => input.addEventListener('change', () => updateEntryFormType(input.value)));
+  dom.tableViewButton.addEventListener('click', () => setTableView(!tableView));
   dom.showBothToggle.addEventListener('change', () => setShowBothSides(dom.showBothToggle.checked));
   dom.exportButton.addEventListener('click', exportJson);
   dom.importButton.addEventListener('click', () => {

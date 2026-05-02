@@ -103,6 +103,7 @@
       </section>
 
       <section class="toolbar toolbar--view" aria-label="Opciones de visualización">
+        <button class="button button--ghost" id="tableViewButton" type="button" aria-pressed="false">Ver tabla</button>
         <label class="view-toggle">
           <input id="showBothToggle" type="checkbox" />
           <span class="view-toggle__control" aria-hidden="true"></span>
@@ -118,6 +119,7 @@
             <span id="positiveMeta" class="list-meta">0 registros</span>
           </div>
           <div id="positiveList" class="entry-list" role="list" aria-live="polite"></div>
+          <div id="positiveTable" class="entries-table-wrap" aria-live="polite"></div>
           <p id="positiveEmpty" class="empty-state">Todavía no hay comportamientos positivos. Añade el primero arriba.</p>
         </article>
 
@@ -127,6 +129,7 @@
             <span id="negativeMeta" class="list-meta">0 registros</span>
           </div>
           <div id="negativeList" class="entry-list" role="list" aria-live="polite"></div>
+          <div id="negativeTable" class="entries-table-wrap" aria-live="polite"></div>
           <p id="negativeEmpty" class="empty-state">Todavía no hay comportamientos negativos. Puedes registrar uno cuando lo necesites.</p>
         </article>
       </section>
