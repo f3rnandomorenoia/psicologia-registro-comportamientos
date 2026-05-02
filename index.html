@@ -129,10 +129,15 @@
       </section>
 
       <section class="toolbar" aria-label="Acciones de datos">
+        <label class="view-toggle">
+          <input id="showBothToggle" type="checkbox" />
+          <span class="view-toggle__control" aria-hidden="true"></span>
+          <span>Ver comportamiento y juicio juntos</span>
+        </label>
         <button class="button button--ghost" id="exportButton" type="button">Exportar JSON</button>
         <button class="button button--ghost" id="importButton" type="button">Importar JSON</button>
         <button class="button button--danger" id="clearButton" type="button">Borrar todo</button>
-        <p class="toolbar__hint">Puedes pegar aquí el JSON exportado para recuperarlo en este navegador.</p>
+        <p class="toolbar__hint">Con el toggle apagado, pulsa una tarjeta para ver el juicio por detrás. Con el toggle encendido, se ve todo junto.</p>
       </section>
 
       <section class="lists-grid" aria-label="Listas dinámicas de comportamientos">
@@ -158,10 +163,16 @@
 
     <template id="entryTemplate">
       <article class="entry-card" role="listitem">
-        <div class="entry-card__body">
-          <p class="entry-card__behavior"></p>
-          <p class="entry-card__judgment"></p>
-          <time class="entry-card__date"></time>
+        <div class="entry-card__flip" role="button" tabindex="0" aria-pressed="false">
+          <div class="entry-card__side entry-card__side--front">
+            <span class="entry-card__label">Comportamiento</span>
+            <p class="entry-card__behavior"></p>
+            <time class="entry-card__date"></time>
+          </div>
+          <div class="entry-card__side entry-card__side--back">
+            <span class="entry-card__label">Juicio asociado</span>
+            <p class="entry-card__judgment"></p>
+          </div>
         </div>
         <button class="entry-card__delete" type="button" aria-label="Eliminar registro">Eliminar</button>
       </article>

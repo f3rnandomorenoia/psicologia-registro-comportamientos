@@ -4,6 +4,7 @@ const STORAGE_KEY = 'behavior-register-state-v1';
 const EMPTY_STATE = { positive: [], negative: [] };
 
 let state = loadState();
+let showBothSides = false;
 
 const dom = {
   forms: document.querySelectorAll('.entry-form'),
@@ -16,6 +17,7 @@ const dom = {
   positiveCount: document.querySelector('#positiveCount'),
   negativeCount: document.querySelector('#negativeCount'),
   totalCount: document.querySelector('#totalCount'),
+  showBothToggle: document.querySelector('#showBothToggle'),
   exportButton: document.querySelector('#exportButton'),
   importButton: document.querySelector('#importButton'),
   importDialog: document.querySelector('#importDialog'),
@@ -88,6 +90,7 @@ function renderList(type, listElement, panelElement, metaElement) {
   entries.forEach((entry) => {
     const node = dom.template.content.firstElementChild.cloneNode(true);
     const date = new Date(entry.createdAt);
+    const flipButton = node.querySelector('.entry-card__flip');
     const deleteButton = node.querySelector('.entry-card__delete');
     const timeElement = node.querySelector('.entry-card__date');
 
@@ -98,6 +101,13 @@ function renderList(type, listElement, panelElement, metaElement) {
     node.querySelector('.entry-card__judgment').textContent = entry.judgment;
     timeElement.textContent = formatDate(date);
     timeElement.dateTime = entry.createdAt;
+    flipButton.setAttribute('aria-label', `Ver juicio asociado a: ${entry.behavior.slice(0, 80)}`);
+    flipButton.addEventListener('click', () => toggleCardFlip(node, flipButton));
+    flipButton.addEventListener('keydown', (event) => {
+      if (!['Enter', ' '].includes(event.key)) return;
+      event.preventDefault();
+      toggleCardFlip(node, flipButton);
+    });
     deleteButton.setAttribute('aria-label', `Eliminar registro: ${entry.behavior.slice(0, 60)}`);
     deleteButton.addEventListener('click', () => deleteEntry(type, entry.id));
 
@@ -105,6 +115,22 @@ function renderList(type, listElement, panelElement, metaElement) {
   });
 
   listElement.append(fragment);
+}
+
+function toggleCardFlip(card, flipButton) {
+  if (showBothSides) return;
+
+  const isFlipped = card.classList.toggle('is-flipped');
+  flipButton.setAttribute('aria-pressed', String(isFlipped));
+}
+
+function setShowBothSides(enabled) {
+  showBothSides = enabled;
+  document.body.classList.toggle('show-both-sides', showBothSides);
+  document.querySelectorAll('.entry-card.is-flipped').forEach((card) => {
+    card.classList.remove('is-flipped');
+    card.querySelector('.entry-card__flip')?.setAttribute('aria-pressed', 'false');
+  });
 }
 
 function renderStats() {
@@ -233,6 +259,7 @@ function handleSubmit(event) {
 
 function bindEvents() {
   dom.forms.forEach((form) => form.addEventListener('submit', handleSubmit));
+  dom.showBothToggle.addEventListener('change', () => setShowBothSides(dom.showBothToggle.checked));
   dom.exportButton.addEventListener('click', exportJson);
   dom.importButton.addEventListener('click', () => {
     dom.importJsonInput.value = '';
