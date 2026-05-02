@@ -187,6 +187,7 @@ h2 {
   display: grid;
   gap: 1rem;
   margin-block-start: 1rem;
+  min-width: 0;
 }
 
 .stats-grid {
@@ -232,6 +233,7 @@ h2 {
 
 .panel,
 .list-panel {
+  min-width: 0;
   padding: clamp(1rem, 3vw, 1.5rem);
 }
 
@@ -438,11 +440,19 @@ textarea:focus {
   grid-auto-columns: minmax(16rem, 20rem);
   grid-auto-flow: column;
   gap: 0.8rem;
+  max-width: 100%;
   margin-block-start: 1rem;
   overflow-x: auto;
+  overflow-y: hidden;
   overscroll-behavior-inline: contain;
   padding: 0.1rem 0.1rem 0.85rem;
   scroll-snap-type: inline mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.entry-list::-webkit-scrollbar {
+  display: none;
 }
 
 .list-panel__header {
