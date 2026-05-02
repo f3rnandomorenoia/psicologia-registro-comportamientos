@@ -463,23 +463,16 @@ textarea:focus {
   display: grid;
   gap: 0.7rem;
   min-width: 0;
-  perspective: 1100px;
   scroll-snap-align: start;
   animation: card-in 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .entry-card__flip {
   position: relative;
-  min-height: 15.5rem;
   border-radius: var(--radius-sm);
   cursor: pointer;
   outline: none;
-  transform-style: preserve-3d;
-  transition: transform 460ms cubic-bezier(0.2, 0.72, 0.2, 1);
-}
-
-.entry-card.is-flipped .entry-card__flip {
-  transform: rotateY(180deg);
+  transition: transform var(--speed), filter var(--speed);
 }
 
 .entry-card__flip:focus-visible {
@@ -487,17 +480,17 @@ textarea:focus {
 }
 
 .entry-card__side {
-  position: absolute;
-  inset: 0;
+  position: relative;
   display: grid;
   align-content: start;
   gap: 0.75rem;
+  min-height: 15.5rem;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   padding: 1rem;
-  backface-visibility: hidden;
   box-shadow: 0 18px 38px rgba(43, 32, 83, 0.16);
+  animation: card-face-in 220ms ease-out both;
 }
 
 .entry-card__side::after {
@@ -512,7 +505,15 @@ textarea:focus {
 }
 
 .entry-card__side--back {
-  transform: rotateY(180deg);
+  display: none;
+}
+
+.entry-card.is-flipped .entry-card__side--front {
+  display: none;
+}
+
+.entry-card.is-flipped .entry-card__side--back {
+  display: grid;
 }
 
 .entry-card--positive .entry-card__side {
@@ -616,14 +617,12 @@ textarea:focus {
   gap: 0.75rem;
   min-height: auto;
   cursor: default;
-  transform: none !important;
 }
 
 .show-both-sides .entry-card__side {
   position: relative;
   min-height: 8rem;
-  backface-visibility: visible;
-  transform: none;
+  display: grid;
 }
 
 .show-both-sides .entry-card__side--back {
@@ -710,6 +709,17 @@ dialog::backdrop {
   from {
     opacity: 0;
     transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes card-face-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
   }
   to {
     opacity: 1;
