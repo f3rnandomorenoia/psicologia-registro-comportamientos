@@ -37,6 +37,7 @@ const dom = {
   showBothToggle: document.querySelector('#showBothToggle'),
   exportButton: document.querySelector('#exportButton'),
   exportPdfButton: document.querySelector('#exportPdfButton'),
+  exportPngButton: document.querySelector('#exportPngButton'),
   importButton: document.querySelector('#importButton'),
   importDialog: document.querySelector('#importDialog'),
   importJsonInput: document.querySelector('#importJsonInput'),
@@ -297,17 +298,21 @@ function showToast(message) {
   }, 2600);
 }
 
-function exportJson() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
 
   link.href = url;
-  link.download = `registro-comportamientos-${new Date().toISOString().slice(0, 10)}.json`;
+  link.download = filename;
   document.body.append(link);
   link.click();
   link.remove();
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+}
+
+function exportJson() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  downloadBlob(blob, `registro-comportamientos-${new Date().toISOString().slice(0, 10)}.json`);
   showToast('JSON exportado.');
 }
 
@@ -320,6 +325,290 @@ function exportPdf() {
   setTableView(true);
   document.body.classList.add('pdf-export-mode');
   window.print();
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function buildPngExportSection(type, title, entries) {
+  if (!entries.length) return '';
+
+  const rows = entries
+    .map(
+      (entry) => `
+        <tr>
+          <td>${escapeHtml(entry.behavior)}</td>
+          <td>${escapeHtml(entry.judgment)}</td>
+        </tr>
+      `,
+    )
+    .join('');
+
+  return `
+    <section class="png-export__section png-export__section--${type}">
+      <div class="png-export__section-head">
+        <h2>${escapeHtml(title)}</h2>
+        <span>${entries.length} ${entries.length === 1 ? 'registro' : 'registros'}</span>
+      </div>
+      <table class="png-export__table png-export__table--${type}">
+        <thead>
+          <tr>
+            <th scope="col">Comportamiento</th>
+            <th scope="col">Juicio</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </section>
+  `;
+}
+
+function buildPngExportMarkup() {
+  const totalCount = state.positive.length + state.negative.length;
+
+  return `
+    <div xmlns="http://www.w3.org/1999/xhtml" class="png-export-root">
+      <style>
+        .png-export-root {
+          width: 1200px;
+          padding: 40px;
+          color: #191527;
+          background: linear-gradient(180deg, #f7f3ff 0%, #eef6ff 100%);
+          font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .png-export__sheet {
+          border: 1px solid rgba(76, 59, 120, 0.14);
+          border-radius: 28px;
+          padding: 32px;
+          background: rgba(255, 255, 255, 0.96);
+          box-shadow: 0 24px 70px rgba(71, 47, 133, 0.14);
+        }
+
+        .png-export__eyebrow {
+          display: inline-block;
+          margin: 0 0 14px;
+          padding: 8px 12px;
+          border-radius: 999px;
+          color: #5b21b6;
+          background: rgba(124, 58, 237, 0.09);
+          font-size: 13px;
+          font-weight: 800;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+        }
+
+        .png-export__title {
+          margin: 0;
+          font-size: 42px;
+          line-height: 1.02;
+          letter-spacing: -0.06em;
+        }
+
+        .png-export__subtitle {
+          margin: 14px 0 0;
+          color: #6c647d;
+          font-size: 17px;
+          line-height: 1.55;
+        }
+
+        .png-export__meta {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          margin: 24px 0 0;
+        }
+
+        .png-export__pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          min-height: 42px;
+          padding: 0 14px;
+          border-radius: 999px;
+          background: rgba(124, 58, 237, 0.08);
+          color: #352c4b;
+          font-size: 14px;
+          font-weight: 700;
+        }
+
+        .png-export__pill strong {
+          color: #191527;
+          font-size: 16px;
+        }
+
+        .png-export__sections {
+          display: grid;
+          gap: 22px;
+          margin-top: 28px;
+        }
+
+        .png-export__section {
+          overflow: hidden;
+          border: 1px solid rgba(76, 59, 120, 0.12);
+          border-radius: 22px;
+          background: #ffffff;
+        }
+
+        .png-export__section-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 14px;
+          padding: 18px 20px;
+          border-bottom: 1px solid rgba(76, 59, 120, 0.1);
+        }
+
+        .png-export__section-head h2 {
+          margin: 0;
+          font-size: 24px;
+          line-height: 1.1;
+          letter-spacing: -0.04em;
+        }
+
+        .png-export__section-head span {
+          color: #6c647d;
+          font-size: 14px;
+          font-weight: 700;
+        }
+
+        .png-export__table {
+          width: 100%;
+          border-collapse: collapse;
+          table-layout: fixed;
+          font-size: 15px;
+        }
+
+        .png-export__table th,
+        .png-export__table td {
+          padding: 14px 16px;
+          border-bottom: 1px solid rgba(76, 59, 120, 0.08);
+          text-align: left;
+          vertical-align: top;
+          word-break: break-word;
+          white-space: pre-wrap;
+        }
+
+        .png-export__table th {
+          color: #6c647d;
+          background: #f8fafc;
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+        }
+
+        .png-export__table td:first-child {
+          width: 41%;
+          color: #191527;
+          font-weight: 800;
+        }
+
+        .png-export__table td:last-child {
+          width: 59%;
+          color: #352c4b;
+          line-height: 1.5;
+        }
+
+        .png-export__table tbody tr:last-child td {
+          border-bottom: 0;
+        }
+
+        .png-export__table--positive tbody tr:nth-child(odd) {
+          background: rgba(16, 185, 129, 0.06);
+        }
+
+        .png-export__table--negative tbody tr:nth-child(odd) {
+          background: rgba(244, 63, 94, 0.06);
+        }
+      </style>
+      <div class="png-export__sheet">
+        <p class="png-export__eyebrow">Psicología · Registro privado</p>
+        <h1 class="png-export__title">Registro de comportamientos y juicios</h1>
+        <p class="png-export__subtitle">Exportación visual en PNG generada desde la vista de tabla para compartirla o revisarla fuera de la app.</p>
+        <div class="png-export__meta">
+          <span class="png-export__pill">Positivos <strong>${state.positive.length}</strong></span>
+          <span class="png-export__pill">Negativos <strong>${state.negative.length}</strong></span>
+          <span class="png-export__pill">Total <strong>${totalCount}</strong></span>
+          <span class="png-export__pill">Generado <strong>${escapeHtml(formatDate(new Date()))}</strong></span>
+        </div>
+        <div class="png-export__sections">
+          ${buildPngExportSection('positive', 'Lista positiva', state.positive)}
+          ${buildPngExportSection('negative', 'Lista negativa', state.negative)}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function createPngBlobFromMarkup(markup) {
+  const measureHost = document.createElement('div');
+  measureHost.style.cssText = 'position: fixed; left: -200vw; top: 0; visibility: hidden; pointer-events: none; z-index: -1;';
+  measureHost.innerHTML = markup;
+  document.body.append(measureHost);
+
+  await new Promise((resolve) => window.requestAnimationFrame(resolve));
+
+  const exportRoot = measureHost.firstElementChild;
+  const width = Math.ceil(exportRoot.getBoundingClientRect().width);
+  const height = Math.ceil(exportRoot.scrollHeight);
+  const svgMarkup = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <foreignObject width="100%" height="100%">${exportRoot.outerHTML}</foreignObject>
+    </svg>
+  `;
+
+  measureHost.remove();
+
+  const image = await new Promise((resolve, reject) => {
+    const preview = new Image();
+    preview.onload = () => resolve(preview);
+    preview.onerror = () => reject(new Error('No se pudo renderizar la tabla en imagen.'));
+    preview.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgMarkup)}`;
+  });
+
+  const scale = Math.max(1.5, Math.min(2, window.devicePixelRatio || 1));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.ceil(width * scale);
+  canvas.height = Math.ceil(height * scale);
+
+  const context = canvas.getContext('2d');
+  context.scale(scale, scale);
+  context.drawImage(image, 0, 0, width, height);
+
+  const blob = await new Promise((resolve, reject) => {
+    canvas.toBlob((pngBlob) => {
+      if (pngBlob) {
+        resolve(pngBlob);
+        return;
+      }
+      reject(new Error('El navegador no pudo convertir la tabla a PNG.'));
+    }, 'image/png');
+  });
+
+  return blob;
+}
+
+async function exportPng() {
+  if (state.positive.length + state.negative.length === 0) {
+    showToast('No hay registros para exportar en PNG.');
+    return;
+  }
+
+  try {
+    const blob = await createPngBlobFromMarkup(buildPngExportMarkup());
+    downloadBlob(blob, `registro-comportamientos-${new Date().toISOString().slice(0, 10)}.png`);
+    showToast('PNG exportado.');
+  } catch (error) {
+    console.error('No se pudo exportar el PNG:', error);
+    showToast('No se pudo exportar el PNG.');
+  }
 }
 
 function normalizeImportedEntries(entries) {
@@ -428,6 +717,7 @@ function bindEvents() {
   dom.showBothToggle.addEventListener('change', () => setShowBothSides(dom.showBothToggle.checked));
   dom.exportButton.addEventListener('click', exportJson);
   dom.exportPdfButton.addEventListener('click', exportPdf);
+  dom.exportPngButton.addEventListener('click', exportPng);
   window.addEventListener('afterprint', () => document.body.classList.remove('pdf-export-mode'));
   dom.importButton.addEventListener('click', () => {
     dom.importJsonInput.value = '';

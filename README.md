@@ -16,6 +16,7 @@ Web estática moderna para registrar comportamientos positivos y negativos con s
 - Toasts de confirmación.
 - Exportación JSON.
 - Exportación PDF en modo tabla mediante el diálogo de impresión/guardar como PDF del navegador.
+- Exportación PNG de la tabla en una sola imagen descargable.
 - Importación pegando el JSON exportado, fusionando registros sin duplicar identificadores.
 - Borrado completo con confirmación mediante `<dialog>`.
 - Diseño mobile-first compatible con GitHub Pages.
